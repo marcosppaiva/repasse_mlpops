@@ -1228,3 +1228,7 @@ postgres/pg_stat/pgstat.stat
 postgres/pg_subtrans/0000
 postgres/pg_wal/000000010000000000000001
 postgres/pg_xact/0000
+
+
+
+mlartifacts/
