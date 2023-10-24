@@ -13,3 +13,17 @@ class Condition(Enum):
     USADO = "Usado"
     EM_CONSTRUCAO = "Em construção"
     PARA_RECUPERAR = "Para recuperar"
+
+
+class EnergyCertify(Enum):
+    E = "E"
+    D = "D"
+    F = "F"
+    C = "C"
+    ISENTO_EM_TRAMITE = "Isento / Em Trâmite"
+    A = "A"
+    A_PLUS = "A+"
+    B = "B"
+    B_MINUS = "B-"
+    G = "G"
+    NA = "NA"
