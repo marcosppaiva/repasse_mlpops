@@ -4,6 +4,7 @@ from datetime import date
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
+from prefect import flow, task
 from tqdm import tqdm
 
 from enums import Condition, ResidenceType
@@ -48,6 +49,7 @@ def get_regions():
     ]
 
 
+@task(retries=2, retry_delay_seconds=2)
 def request_page(url):
     request = requests.get(
         url,
@@ -69,6 +71,7 @@ def create_request_link(residence_type, region, page, service_type="arrendar"):
     )
 
 
+@task(retries=2, retry_delay_seconds=2)
 def get_num_pages(soup):
     try:
         page_list = soup.find("ul", attrs={"class": "pager"})
@@ -86,6 +89,7 @@ def get_attribute_safe(element, name, attribute, default="NA"):
         return default
 
 
+@task(retries=2, retry_delay_seconds=2)
 def get_infos(soup):
     list_ads = soup.find_all("article")
     ads = []
@@ -121,6 +125,7 @@ def get_infos(soup):
     return ads
 
 
+@task(retries=2, retry_delay_seconds=2)
 def detail_extract(data_frame: pd.DataFrame):
     data_frame.loc[
         data_frame[data_frame.details.str.contains("Anúncio")].index, "company"
@@ -141,8 +146,9 @@ def detail_extract(data_frame: pd.DataFrame):
     return data_frame
 
 
+@task(retries=2, retry_delay_seconds=2)
 def save_data(df: pd.DataFrame, on_cloud: bool = True):
-    filename = f"data/raw/imovirtual.parquet"
+    filename = "data/raw/imovirtual.parquet"
     df.to_parquet(filename)
     # if on_cloud:
     #     try:
@@ -151,6 +157,7 @@ def save_data(df: pd.DataFrame, on_cloud: bool = True):
     #         logging.error(f"Error to save file on cloud: {error}")
 
 
+@flow()
 def scrapper_run():
     df = pd.DataFrame()
     regions = get_regions()
